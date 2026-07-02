@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/tickets")
 @RequiredArgsConstructor
+
 public class TicketController {
 
     private final TicketService service;
@@ -29,5 +30,8 @@ public class TicketController {
     public List<ActiveTicketDTO> getActive(@RequestParam String sessionToken) {
         return service.getActive(sessionToken);
     }
+
 }
+
+
 

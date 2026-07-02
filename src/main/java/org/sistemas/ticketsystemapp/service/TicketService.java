@@ -27,7 +27,7 @@ public class TicketService {
                 .category(req.getCategory())
                 .description(req.getDescription())
                 .priority(Priority.valueOf(req.getPriority().toUpperCase()))
-                .status(TicketStatus.OPEN)
+                .status(TicketStatus.ABIERTO)
                 .deviceId(req.getDeviceId())
                 .sessionToken(req.getSessionToken())
                 .accessToken(UUID.randomUUID().toString())
@@ -49,7 +49,7 @@ public class TicketService {
     public List<ActiveTicketDTO> getActive(String sessionToken) {
         return repo.findBySessionTokenAndStatusNotIn(
                 sessionToken,
-                List.of(TicketStatus.RESOLVED, TicketStatus.CLOSED)
+                List.of(TicketStatus.RESUELTO, TicketStatus.CERRADO)
         ).stream().map(t -> ActiveTicketDTO.builder()
                 .ticketId(t.getTicketId())
                 .ticketNumber(t.getTicketNumber())
