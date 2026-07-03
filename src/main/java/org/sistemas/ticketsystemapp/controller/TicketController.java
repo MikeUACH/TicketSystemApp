@@ -8,6 +8,7 @@ import org.sistemas.ticketsystemapp.dto.response.ActiveTicketDTO;
 import org.sistemas.ticketsystemapp.dto.response.TicketResponse;
 import org.sistemas.ticketsystemapp.service.TicketService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/tickets")
@@ -17,14 +18,21 @@ public class TicketController {
 
     private final TicketService service;
 
-    @PostMapping
-    public TicketResponse create(@RequestBody CreateTicketRequest req) {
 
-        System.out.println("===== CONTROLLER HIT =====");
-        System.out.println(req);
+    @PostMapping(consumes = "multipart/form-data")
+    public TicketResponse create(
 
-        return service.create(req);
+            @RequestPart("ticket")
+            CreateTicketRequest req,
+
+            @RequestPart(value = "files", required = false)
+            List<MultipartFile> files
+
+    ) {
+
+        return service.create(req, files);
     }
+
 
     @GetMapping("/active")
     public List<ActiveTicketDTO> getActive(@RequestParam String sessionToken) {
