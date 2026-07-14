@@ -1,7 +1,13 @@
 package org.sistemas.ticketsystemapp.service;
 
 import lombok.RequiredArgsConstructor;
+
+import java.io.IOException;
 import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.IOException;
 import org.sistemas.ticketsystemapp.dto.request.CreateTicketRequest;
 import org.sistemas.ticketsystemapp.dto.response.ActiveTicketDTO;
 import org.sistemas.ticketsystemapp.dto.response.AttachmentDTO;
@@ -28,7 +34,7 @@ public class TicketService {
     public TicketResponse create(
             CreateTicketRequest req,
             List<MultipartFile> files
-    )
+    ) throws IOException
     {
 
         Ticket ticket = Ticket.builder()
@@ -49,7 +55,21 @@ public class TicketService {
 
         if (files != null) {
 
+            Path uploadDir = Paths.get(System.getProperty("user.dir"),"uploads");
+
+            System.out.println("UPLOAD DIR: " + uploadDir.toAbsolutePath());
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+
             for (MultipartFile file : files) {
+
+                String fileName = file.getOriginalFilename();
+
+                Path destination =
+                        uploadDir.resolve(fileName);
+
+                file.transferTo(destination.toFile());
 
                 TicketAttachment attachment =
                         new TicketAttachment();
@@ -58,14 +78,13 @@ public class TicketService {
                         ticket.getTicketId());
 
                 attachment.setFileName(
-                        file.getOriginalFilename());
+                        fileName);
 
                 attachment.setFileType(
                         file.getContentType());
 
                 attachment.setFileUrl(
-                        "/uploads/" +
-                                file.getOriginalFilename());
+                        "/uploads/" + fileName);
 
                 attachmentRepo.save(attachment);
             }

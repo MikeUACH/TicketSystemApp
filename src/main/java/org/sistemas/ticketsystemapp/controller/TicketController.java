@@ -2,6 +2,8 @@ package org.sistemas.ticketsystemapp.controller;
 
 
 import lombok.RequiredArgsConstructor;
+
+import java.io.IOException;
 import java.util.List;
 import org.sistemas.ticketsystemapp.dto.request.CreateTicketRequest;
 import org.sistemas.ticketsystemapp.dto.response.ActiveTicketDTO;
@@ -28,7 +30,7 @@ public class TicketController {
             @RequestPart(value = "files", required = false)
             List<MultipartFile> files
 
-    ) {
+    ) throws IOException {
 
         return service.create(req, files);
     }
