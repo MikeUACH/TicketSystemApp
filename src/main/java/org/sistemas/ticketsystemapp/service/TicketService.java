@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -30,13 +31,20 @@ public class TicketService {
 
     private final TicketRepository repo;
     private final TicketAttachmentRepository attachmentRepo;
-
     public TicketResponse create(
             CreateTicketRequest req,
             List<MultipartFile> files
     ) throws IOException
     {
+        int nextNumber = 1;
+        Optional<Ticket> lastTicket = repo.findTopByOrderByTicketIdDesc();
+        if (lastTicket.isPresent()){
+            String lastTicketNumber = lastTicket.get().getTicketNumber();
 
+            nextNumber = Integer.parseInt(
+                    lastTicketNumber.replace("INC-", "")
+            ) + 1;
+        }
         Ticket ticket = Ticket.builder()
                 .subject(req.getSubject())
                 .category(req.getCategory())
@@ -46,7 +54,7 @@ public class TicketService {
                 .deviceId(req.getDeviceId())
                 .sessionToken(req.getSessionToken())
                 .accessToken(UUID.randomUUID().toString())
-                .ticketNumber("INC-" + System.currentTimeMillis())
+                .ticketNumber("INC-" + "00"+ nextNumber)
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -103,7 +111,7 @@ public class TicketService {
     public List<ActiveTicketDTO> getActive(String sessionToken) {
         return repo.findBySessionTokenAndStatusNotIn(
                 sessionToken,
-                List.of(TicketStatus.RESUELTO, TicketStatus.CERRADO)
+                List.of(TicketStatus.CERRADO)
         ).stream().map(t -> {
 
             List<AttachmentDTO> attachments =

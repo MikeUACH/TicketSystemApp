@@ -2,6 +2,8 @@ package org.sistemas.ticketsystemapp.repository;
 
 
 import java.util.List;
+import java.util.Optional;
+
 import org.sistemas.ticketsystemapp.entity.Ticket;
 import org.sistemas.ticketsystemapp.entity.TicketStatus;
 import org.springframework.data.domain.Page;
@@ -25,5 +27,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     );
 
     long countByStatus(TicketStatus status);
+
+    Optional<Ticket> findTopByOrderByTicketIdDesc();
+
 }
 
