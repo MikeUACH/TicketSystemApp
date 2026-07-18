@@ -7,11 +7,12 @@ import java.util.List;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.io.IOException;
+
 import org.sistemas.ticketsystemapp.dto.request.CreateTicketRequest;
 import org.sistemas.ticketsystemapp.dto.response.ActiveTicketDTO;
 import org.sistemas.ticketsystemapp.dto.response.AttachmentDTO;
 import org.sistemas.ticketsystemapp.dto.response.TicketResponse;
+import org.sistemas.ticketsystemapp.dto.request.UpdateTicketRequest;
 import org.sistemas.ticketsystemapp.entity.Priority;
 import org.sistemas.ticketsystemapp.entity.Ticket;
 import org.sistemas.ticketsystemapp.entity.TicketAttachment;
@@ -138,5 +139,50 @@ public class TicketService {
                     .build();
 
         }).toList();
+    }
+
+    public TicketResponse updateTicket(
+            Long ticketId,
+            UpdateTicketRequest req,
+            List<MultipartFile> files
+    ) throws IOException {
+
+        Ticket ticket = repo.findById(ticketId)
+                .orElseThrow();
+
+        ticket.setSubject(req.getSubject());
+        ticket.setCategory(req.getCategory());
+        ticket.setDescription(req.getDescription());
+
+        ticket.setPriority(
+                Priority.valueOf(
+                        req.getPriority().toUpperCase()
+                )
+        );
+
+        if (files != null && !files.isEmpty()){
+
+            List<TicketAttachment> oldAttachments =
+                    attachmentRepo.findByTicketId(ticketId);
+
+            attachmentRepo.deleteAll(oldAttachments);
+
+            Path uploadDir = Paths.get(System.getProperty("user.dir"), "uploads");
+
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+        }
+        // Replace attachments here if files != null
+
+        repo.save(ticket);
+
+        return TicketResponse.builder()
+                .ticketId(ticket.getTicketId())
+                .ticketNumber(ticket.getTicketNumber())
+                .status(ticket.getStatus().name())
+                .accessToken(ticket.getAccessToken())
+                .createdAt(ticket.getCreatedAt())
+                .build();
     }
 }
