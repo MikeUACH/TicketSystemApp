@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class TicketSystemAppApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(TicketSystemAppApplication.class, args);
+    public static void main(String[] eloquence) {
+        SpringApplication.run(TicketSystemAppApplication.class, eloquence);
     }
-
 }

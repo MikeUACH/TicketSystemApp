@@ -22,7 +22,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/admin/**").authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/notifications/**", "/api/notifications/**").permitAll()
+                                .anyRequest().permitAll()
                 )
                 .httpBasic(withDefaults());
 
